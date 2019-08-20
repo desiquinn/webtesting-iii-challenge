@@ -1,33 +1,49 @@
 // Test away
 import React from 'react';
-import renderer from 'react-test-renderer';
+import * as rtl from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 
 import Dashboard from './Dashboard.js';
 
 
 describe('<Dashboard />', () => {
 
-    it('should default to unlocked', () => {
+    it('should default to unlocked and open', () => {
+        const { getByText } = rtl.render(<Dashboard/>);
+        const defaultLock = getByText(/unlocked/i);
+        const defaultOpen = getByText(/open/i);
 
-        const lockedValue= false;
-
-        expect(Dashboard.state.locked).toBe(lockedValue)
-
+        expect(defaultLock).toBeTruthy();
+        expect(defaultOpen).toBeTruthy();
     });
 
-    it('should default to closed', () => {
+    it('should show the controls and display', () => {
 
-        const closedValue= false;
+        const display = rtl.render(<Dashboard />);
 
-        expect(Dashboard.state.closed).toBe(closedValue)
-        
-    })
+        display.getByText(/unlocked/i);
+        display.getByText(/locked/i);
+        display.getByText(/close gate/i);
+        display.getByText(/lock gate/i);
+    });
 
     it('can not be opened or closed if locked', () => {
         
-        if(Dashboard.state.locked === true) {
-            expect(Dashboard.toggleClosed).not.toBeCalled()
-        }
+        const dashboard = rtl.render(<Dashboard/>);
 
+        let lockButton = dashboard.getByText(/lock gate/i);
+        let openButton = dashboard.getByText(/close gate/i);
+
+        expect(openButton.textContent).toBe("Close Gate");
+
+        rtl.fireEvent.click(openButton);
+        expect(openButton.textContent).toBe("Open Gate");
+
+        rtl.fireEvent.click(lockButton);
+        expect(lockButton.textContent).toBe("Unlock Gate");
+        expect(openButton.textContent).toBe("Open Gate");
+
+        rtl.fireEvent.click(openButton);
+        expect(openButton.textContent).toBe("Open Gate");
     });
 });
