@@ -69,8 +69,8 @@ describe('<Display />', () => {
         const locked = display.getByText(/locked/i);
         const closed = display.getByText(/closed/i);
 
-        expect(locked.classList[1]).toBe('red-led');
-        expect(closed.classList[1]).toBe('red-led');
+        expect(locked.className).toContain('red-led');
+        expect(closed.className).toContain('red-led');
 
 
     });
